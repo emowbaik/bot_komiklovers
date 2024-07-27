@@ -1,0 +1,6 @@
+# roles.json
+bot.log
+
+# Environments
+.env
+venv/
