@@ -11,7 +11,6 @@ def hex_to_int(hex_color):
     return int(hex_color.lstrip('#'), 16)
 
 # Fungsi untuk menyederhanakan timestamp
-# Fungsi untuk menyederhanakan timestamp
 def simplify_timestamp(timestamp):
     # Jika timestamp adalah objek datetime, ubah menjadi string
     if isinstance(timestamp, datetime):
@@ -22,7 +21,6 @@ def simplify_timestamp(timestamp):
     except Exception as e:
         logging.error(f"Failed to simplify timestamp: {e}")
         return "Invalid date"
-
 
 # Fungsi untuk mengekstrak nama seri dari judul
 def extract_series_name(title):
@@ -35,20 +33,22 @@ def extract_series_name(title):
 # Fungsi untuk menentukan role mention berdasarkan title dari RSS feed
 async def get_role_mention(bot, title):
     series_name = extract_series_name(title)
-    # logging.info(f"Extracted series name: {series_name}")
-    
     guild = bot.get_guild(int(os.getenv('GUILD_ID')))
+    
     if not guild:
         logging.error("Guild not found.")
         return ""
-    
-    role = discord.utils.get(guild.roles, name=series_name)
-    if role:
-        logging.info(f"Role found: {role.name}")
-        return role.mention
-    else:
-        logging.error(f"Role '{series_name}' not found in guild.")
-        return ""
+
+    # Ambil semua role dari guild
+    roles = guild.roles
+    # Cari role yang mengandung kata kunci dari series_name
+    for role in roles:
+        if series_name.lower() in role.name.lower():
+            logging.info(f"Role found: {role.name}")
+            return role.mention
+
+    logging.error(f"Role containing '{series_name}' not found in guild.")
+    return ""
 
 # Fungsi untuk mengirim pesan ke Discord dengan dua tombol
 async def send_to_discord(bot, entry_id, title, link, published, author):
@@ -56,7 +56,6 @@ async def send_to_discord(bot, entry_id, title, link, published, author):
     
     if not role_mention:
         save_pending_entry(entry_id, published, title, link, author)
-        # logging.info(f"Entry '{title}' saved as pending since role not found.")
         return
     
     simplified_time = simplify_timestamp(published)

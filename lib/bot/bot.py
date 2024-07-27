@@ -1,5 +1,4 @@
 import os
-import json
 import logging
 import discord
 import feedparser
@@ -16,10 +15,6 @@ load_dotenv()
 
 # Setup logging
 setup_logging()
-
-# Muat data dari file JSON untuk roles
-with open('roles.json') as f:
-    entries_data = json.load(f)
 
 # Inisialisasi bot dengan AutoShardedBot
 intents = discord.Intents.default()
