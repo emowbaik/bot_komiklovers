@@ -4,6 +4,7 @@ from dateutil import parser
 import discord
 import logging
 import re
+from fuzzywuzzy import fuzz
 from lib.http.db_utils import save_pending_entry
 
 # Fungsi untuk mengubah warna hex menjadi integer
@@ -41,13 +42,20 @@ async def get_role_mention(bot, title):
 
     # Ambil semua role dari guild
     roles = guild.roles
-    # Cari role yang mengandung kata kunci dari series_name
-    for role in roles:
-        if series_name.lower() in role.name.lower():
-            logging.info(f"Role found: {role.name}")
-            return role.mention
 
-    logging.error(f"Role containing '{series_name}' not found in guild.")
+    # Cari role yang paling mirip dengan series_name menggunakan fuzzy matching
+    best_match = None
+    highest_ratio = 0
+    for role in roles:
+        ratio = fuzz.partial_ratio(series_name.lower(), role.name.lower())
+        if ratio > highest_ratio:
+            highest_ratio = ratio
+            best_match = role
+
+    if best_match and highest_ratio > 80:  # Misalnya, hanya menerima kecocokan dengan rasio > 80
+        return best_match.mention
+
+    logging.error(f"Role containing keywords from '{series_name}' not found in guild.")
     return ""
 
 # Fungsi untuk mengirim pesan ke Discord dengan dua tombol
@@ -72,7 +80,7 @@ async def send_to_discord(bot, entry_id, title, link, published, author):
     view.add_item(button1)
     view.add_item(button2)
 
-    channel = bot.get_channel(int(os.getenv('CHANNEL_ID')))
+    channel = bot.get_channel(int(os.getenv('TARGET_CHANNEL_ID')))  # Ganti dengan CHANNEL_ID target
     if channel:
         try:
             await channel.send(content=f"<@&1226513877127397528>{role_mention} Read Now!", embed=embed, view=view)

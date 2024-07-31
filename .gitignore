@@ -3,4 +3,4 @@ bot.log
 
 # Environments
 .env
-venv/
+# venv/
