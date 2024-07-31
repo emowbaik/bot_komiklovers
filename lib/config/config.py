@@ -10,7 +10,10 @@ load_dotenv()
 # Ambil konfigurasi dari variabel lingkungan
 RSS_URL = os.getenv('RSS_URL')
 DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
-CHANNEL_ID = int(os.getenv('CHANNEL_ID'))
+TARGET_CHANNEL_ID = int(os.getenv('TARGET_CHANNEL_ID'))
+SOURCE_CHANNEL_ID = int(os.getenv('SOURCE_CHANNEL_ID'))
+OTHER_BOT_ID = int(os.getenv('OTHER_BOT_ID'))
+GUILD_ID = int(os.getenv('GUILD_ID'))
 
 # Fungsi untuk mendapatkan koneksi database
 def get_db_connection():
