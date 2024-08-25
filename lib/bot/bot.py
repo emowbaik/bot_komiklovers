@@ -28,11 +28,19 @@ setup_commands(bot)
 async def check_pending_entries():
     logging.info("Checking for pending entries...")
     pending_entries = fetch_pending_entries()
+    
+    # Log jumlah pending entries yang ditemukan
+    logging.info(f"Found {len(pending_entries)} pending entries.")
+    
     for entry in pending_entries:
         entry_id, published, title, link, author = entry
+        
+        # Log informasi dari setiap entry
+        logging.info(f"Processing entry: ID={entry_id}, Title='{title}', Link='{link}', Published='{published}', Author='{author}'")
+        
         role_mention = await get_role_mention(bot, title)
         if role_mention:
-            await send_to_discord(bot, title, link, published, author)
+            await send_to_discord(bot, entry_id, title, link, published, author)
             delete_pending_entry(entry_id)
         else:
             logging.info(f"Role for '{title}' not found yet. Will retry later.")
